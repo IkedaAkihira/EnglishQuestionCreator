@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>英文虫食い問題制作装置</title>
+    </head>
+    <body>
+        <p>英文を入力して、startボタンを押すと、その文の虫食い問題を自動で作成して表示します。各自でコピペするなりして、自作の問題に使ってください。また、下のリンクからはすべての虫食い問題とその答えをjson形式でダウンロードすることができます。</p>
+        <input id="main"/>
+        <button id="start">start</button>
+        <br/>
+        <a download="問題集.json" id="download">虫食いのjsonファイルをダウンロード</a>
+        <script>
+            let j=[];
+            let main=document.getElementById("main"),start=document.getElementById("start"),download=document.getElementById("download");
+            start.onclick=()=>{
+                let rightStr=main.value;
+                let leftStr="";
+                let arr=rightStr.split(/\W+/);
+                for(let i=0;i<arr.length;i++){
+                    if(arr[i]=="")
+                        break;
+                    let cutStr=rightStr.substr(0,rightStr.search(arr[i])+arr[i].length);
+                    leftStr+=cutStr;
+                    rightStr=rightStr.replace(cutStr,"");
+                    console.log(leftStr);
+                    console.log(rightStr);
+                    console.log(cutStr);
+                    let returnStr=leftStr.substr(0,leftStr.lastIndexOf(arr[i]))+"_".repeat(arr[i].length)+rightStr;
+                    let el=document.createElement("p");
+                    el.textContent="question:  "+returnStr;
+                    document.body.appendChild(el);
+                    let el2=document.createElement("p");
+                    el2.textContent="answer:  "+arr[i];
+                    document.body.appendChild(el2);
+                    j.push({question:returnStr,answer:arr[i]});
+                }
+                let jsonStr=JSON.stringify(j);
+                let blob=new Blob([jsonStr],{type:"text/plain"});
+                download.href=URL.createObjectURL(blob);
+            }
+        </script>
+    </body>
+</html>
